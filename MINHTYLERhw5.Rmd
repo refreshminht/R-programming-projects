@@ -1,0 +1,50 @@
+---
+title: "Homework 5 -- QTM 150"
+author: "Minh-Thy Tyler"
+output: html_document
+---
+
+## Homework 5
+
+**1** (2 pt). Load the packages `tidyverse`. Load the dataset `gss.csv` (check the class GitHub / Canvas). To load the dataset, use the function `read_csv`, from the `tidyverse` library.
+
+```{r}
+library(tidyverse)
+gss <- read.csv("https://raw.githubusercontent.com/umbertomig/qtm150/master/datasets/gss.csv")
+# Your code here
+```
+
+**2** (2 pt). Check the head and the tail of the dataset. How many observations the `gss` dataset has?
+
+```{r}
+head(gss)
+tail(gss)
+dim(gss)
+# There are 53474 observations
+```
+
+**3** (2 pt). To create a table of a variable, you need to use the command `table(variable_name)`. Create a table of the `region` variable in the dataset `gss`.
+
+```{r}
+table(gss$region)
+# Your code here
+```
+
+**4** (2 pt). Create a subsample of the dataset, with only people from the `SOUTH ATLANTIC` region. Then, using the subsampled dataset, create a table of the variable `happy`. Would you say that people living in the south atlantic are happy?
+
+```{r}
+Satl <- filter(gss, region== "SOUTH ATLANTIC")
+table(Satl$happy)
+# The people living in the South Atlantic are Happy as majority of the people there are Pretty Happy or Very Happy. Only 1193 people are not too happy.
+```
+
+**5** (2 pt). In what region people are, on average, older? (Hint: use group_by + summarize. Hint 2: There is missing data in the age. You should use `mean(age, na.rm = T)`. Hint 3: `NOT ASSIGNED` is not a region. It should be removed before using group_by + summarize. To remove, remember that the way to say different in R is `!=`)
+
+```{r}
+gss_new <- filter(gss, region != "NOT ASSIGNED")
+gss_new %>% group_by(region) %>% summarize (mean_age= mean(age, na.rm = T))
+
+# Your code here
+```
+
+People are the oldest in the Eastern South Central region

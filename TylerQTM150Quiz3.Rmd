@@ -1,0 +1,19 @@
+---
+title: "QTM 150 Quiz 3"
+author: "Minh-Thy Tyler"
+date: "February 20 2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#**Weather in Atlanta**
+
+The weather in Atlanta is great. It is very hot in the summer and it is breezy in the winter. During the summer, the weather can get up to 90 degrees Farenheit and during the winter, the weather can get down to 27 degrees Farenheit. Right now, it is winter and the weather is confusing because one day it can be 32 degrees Farenheit and the next it can be 50 degrees Farenheit. The weather can be rainy sometimes during the fall and spring. Today is very sunny
+
+##**Histogram of Urban Population of US Arrests**
+```{r}
+data(USArrests)
+hist(USArrests$UrbanPop)
+```

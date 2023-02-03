@@ -1,0 +1,138 @@
+---
+title: "AirBnB Final Project -- QTM 150"
+author: "Minh-Thy Tyler, Martin Huang, Rosie Keating"
+date: "4/21/2021"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#QTM 150 AirBnB Final Project
+
+##This project will be investigating the dataset AIRBNB_NYC.csv. The dataset contains AirBnB data in New York City in 2019
+```{r}
+library('tidyverse')
+getwd()
+airbnb <- read.csv('airBnB.csv')
+```
+
+#Part A
+
+**1** _Identify your data set. Then, please describe what you want to investigate in a single paragraph after carefully reviewing the data set and its codebook._
+
+The name of our data set is AIRBnB_NYC. The data set comes from Kaggle, a website that contains New York City’s AirBnB listings’ open data from the year 2019. Our data shows a list of 16 variables, including  the name, neighborhood group, number of reviews, price, and room type of AirBnBs in New York City. It has 48,895 observations. For our project, we want to investigate if the number of reviews of the AirBnB and if the AirBnB’s neighborhood group has an influence on its price. This is because there have been many people on the internet wondering what determines an AirBnB. According to a a study done by individuals from the University of Tennessee in 2017 (access:
+https://www.mdpi.com/2071-1050/9/9/1635/pdf#:~:text=Reviews%20and%20ratings%20are%20also,explanatory%20variables%20in%20this%20study) one of the factors that influence AirBnB is number of reviews. We will be doing our own statistical analysis to see if our conclusions support their findings. The variables we will be using are price: price in dollars, number_of_reviews: number of reviews, and neighbourhood_group: location. We believe that both neighborhood group and number of reviews will have a price of the AirBnB. 
+
+
+**2** _First, choose a numerical response variable. This is the outcome (response) of your research interest which must be a numerical vector. Provide your rationale for choosing this variable as your response variable, then print the variable's summary statistics such as mean, standard deviation, median, minimum, and maximum values. Also, produce an appropriate plot using only this variable._
+
+Our numerical response variable is the price. This is the price of an Airbnb booking. We chose this variable because we believe that it has a relationship to many of the other variables included in the data set. Many variables in the data set have shown to influence the price of the AirBnB, and we would like to study which independent variables do so. We chose this because we will be studying the factors that influence AirBnB prices. Specifically we will be investigating whether the number of reviewers or where the AirBnB is located will have an influence on its price.
+
+```{r}
+summary(airbnb$price)
+sd(airbnb$price)
+qplot(airbnb$price, geom= "histogram", bins= 80, main= "AirBnB Price Listings", xlab= "Price", ylab= "Frequency", color=I("black"), fill= I("white"))
+
+```
+
+**3** _Examine the plot, and report any unusual observations. Explain why you find some observations strange or unusual. Then, create a new response variable in your data frame using your original response variable. In doing so, you should exclude all of the unusual observations by converting them into NAs._
+
+Looking at the graph, there is a wide range in the plot. The minimum price is $0, which is strange because AirBnBs usually are not free to stay in. The maximum price is $10,000, which is an outlier in the data set. The median is $106 and the mean is $152.70, meaning the graph is heavily skewed to the right and there are extreme outliers. We will be taking out the extreme outliers from our data for price. We will do this by the equation: Quartile 3 + 3*Interquartile Range (there are no lower extreme outliers). The Q3 is 175, the interquartile range is Q3-Q1= 175-69 = 106. 175+ 106*3= 493, so we will be taking out all of the prices above $338.
+
+
+```{r}
+airbnb$newprice <- airbnb$price
+airbnb$newprice[airbnb$newprice ==0] <- NA
+airbnb$newprice[airbnb$newprice >493] <- NA
+
+```
+
+**4** _Now, choose your second variable, which will serve as the main explanatory variable. This could be either numerical or categorical, and it is the variable used to explain the outcome of the variable mentioned in Question 2. Thus, you should choose a variable that you think will be related to the response variable. Explain why you chose this variable as your main explanatory variable, and print the summary of this variable, including a plot. _
+
+Our main explanatory variable will be the number of reviews. We believe that more numerous reviews can lead to a higher price of an AirBnB. Many people have tried to figure out what determines the price of an AirBnB, and some research shows that the more reviews an AirBnB has the higher the price tends to be. We will see if there is a correlation between price and number of reviews in this project.
+
+```{r}
+
+summary(airbnb$number_of_reviews)
+qplot(airbnb$number_of_reviews, geom= "histogram", bins= 15, main= "AirBnB Number of Reviews", xlab= "Number of Reviews", ylab= "Frequency", color=I("black"), fill= I("white"))
+
+```
+
+**5** _Similar to what you did in Question 3, report any unusual observations in your explanatory variable. Create a new explanatory variable in your data frame using your original response variable. In doing so, you should exclude all of the unusual observations by converting them into NAs._
+
+The median is 5 reviews and the mean is 23.27 reviews, so our data is heavily skewed to the right. The maximum value is 629 reviews and the minimum value is 0 reviews. Similar to what we did in problem 3, we will be taking out all of the outliers in our data set. We will be taking out the outliers using the outlier equation. The interquartile range is 23 and quartile 3 is 24. So, 24+ 23*3= 93. We will be taking out all of the data from above 58.5. 
+
+```{r}
+
+airbnb$newreview <- airbnb$number_of_reviews
+airbnb$newreview[airbnb$newreview > 93] <- NA
+
+```
+**6** _Describe what you expect to see regarding a relationship between the two variables you chose in Questions 2 and 4. In other words, how do you expect your explanatory variable (i.e., the predictor) is associated with the response variable (i.e., the outcome)? It is important to remember that your response to this question should be similar to your response for Question 1, with more specific predictions involving the two variables. Be sure to explain why you expect such a pattern between the two variables (i.e., the rationale). ._
+
+We expect to see a positive correlation between our response variable, price of an AirBnB and our explanatory variable, the number of reviews. This is because we believe that more numerous reviews will make the price of the AirBnB go up. There has been a previous study that concluded that one of the factors that influence the price of an AirBnB in Tennessee is how many reviews it has, so we assume that the study’s findings may also be applicable to AirBnBs in New York City. We also expect to see this pattern because if an AirBnB has more reviews, it means that more people have stayed there and were inclined to leave a review. This may result in AirBnB listers to raise the price of their AirBnB. If there is a positive correlation, we must understand that there may be confounders influencing the price and the number of reviews. Because there are many factors that influence the price and number of reviews that we did not account for, we will not be able to make reliable conclusions from the correlation we find.
+
+**7** _Produce a simple plot showing the overall relationship between your two variables by placing the explanatory variable on the x-axis and the response variable on the y-axis. Be sure to label both axes and include a title for the plot by using appropriate arguments. _
+
+```{r}
+
+qplot(y= airbnb$newreview, x= airbnb$newprice, geom= "point", main= "AirBnB Price vs Number of Reviews", xlab= "Number Of Reviews", ylab= "Price")+geom_smooth(method=lm)
+```
+
+**8** _In plain English, describe the pattern (if any) between the explanatory and the response variables observed in the plot. Did it match your expectation? Why or why not? Explain the outcome._
+
+There seems to be a weak negative correlation between the price of the AirBnB and the number of reviews it has. This is surprising, because we expected to see a positive correlation between the two variables. This may be because of a variety of reasons. More people in New York City specifically may want to save money and live in a cheaper AirBnB, causing the number of reviews to be greater in AirBnBs with lower prices. 
+
+#Part B
+
+**1** _In Part A, we observed an overall relationship between two variables. Choose another variable (make sure it's a categorical variable) that can help you investigate this relationship more specifically. This is going to be your secondary explanatory variable. Which variable did you choose? Be sure to provide your rationale for choosing your secondary explanatory variable._
+
+The categorical variable that we will be choosing is neighborhood group (Manhattan, Brooklyn, Queens, Staten Island, Bronx). We believe that the neighborhood of where the AirBnB is located will increase the price of the AirBnB. We assume that the nicer the neighborhood is the more expensive the AirBnB would be because certain people would spend more to stay in certain neighborhoods. 
+
+**2** _Using the two explanatory variables, provide a summary table of the outcome using group_by(), arrange(), and summarize() functions. _
+
+```{r}
+airbnb %>% group_by(newprice, neighbourhood_group, newreview) %>% summarise(n=n()) %>% arrange()
+
+```
+
+**3** _Produce an appropriate plot using all three variables. Make sure all of your variables (at least 3) are clearly displayed in the plot._
+
+```{r}
+ggplot(airbnb, aes(x = newreview, y = newprice,  color = neighbourhood_group)) + geom_point(alpha = .4, size = 3) +  labs(x = "Number of Reviews.", title = "Number of Reviews, Price, and Neighbourhood Group of AirBnBs", y = "Price", color = "Neighbourhood Group") 
+```
+
+**4** _Describe the plot in plain English. How does this plot differ from the one produced in Part A? Did it match your expectation? Why or why not? Explain the outcome._
+
+Similar to the plot in Part A, there appears to be a weak negative correlation between price and number of reviews. The majority of listings are grouped together in the $0-$200 price range, and among these, listings are relatively evenly distributed between low and high amounts of reviews. This indicates that for the majority of listings, the number of reviews does not affect the price, but altogether, there are more reviews for the less expensive airbnbs. As price increases, there tend to be less reviews. This pattern could be explained by the fact that people are more inclined to stay at an affordable airbnb, so more traffic through the listings leads to more reviews. 
+Neighborhood groups appear to affect the price but not the number of reviews. Listings in Staten Island and the Bronx tend to fall in the $0-$200 range. Listings in Queens also fall in this range, but with slightly more deviation. Listings in Brooklyn and Manhattan are more evenly distributed but still are more frequently in the lower price range. All neighborhood groups are relatively evenly distributed among the number of reviews.
+
+**5** _Examine your plot again and describe in what ways you can improve it. Here, you can either exclude certain observations/categories or create a new categorical variable by recoding the existing variable categories. Note that you need to clearly justify your actions either way. In other words, why do you think it's necessary to do so, and how do you think your plot will be improved by doing so? _
+
+We believe that the observations in our plot do not need any adjustments because we are using the new adjusted variables computed in part A (where we took out the outliers and unusual observations) in our analysis for part B. As for our secondary categorical variable, we are not excluding any neighbourhood group categories because they are critical in providing a well rounded observation via location in New York when comparing price, number of reviews, and neighbourhood group of the AirBnB. Instead, we will be improving our graph by dividing up the neighbourhood groups using the facet_wrap function. We are doing this because there is a lot of data in our previous plot, which makes the plot very confusing and hard to read. Doing this will also make it easier to interpret the plot and do a better analysis. 
+
+**6** _Produce another plot reflecting the modifications you made in Question 5. Describe the plot again. Be sure to specifically describe how this plot is different from the previous one._
+
+```{r}
+ggplot(airbnb, aes(x = newreview, y = newprice,  color = neighbourhood_group)) + geom_point(alpha = .4, size = 3) +  labs(x = "Number of Reviews.", title = "Number of Reviews, Price, and Neighbourhood Group of AirBnBs", y = "Price", color = "Neighbourhood Group") + facet_wrap(~neighbourhood_group)
+
+```
+
+For our new plot, we separated out the data by neighbourhood group. This made the graph much easier to read as the price and number of reviews variables are one color and not as conglomerated. Contrasted to the previous one, where all of the neighbourhood groups of the AirBnB is graphed by price and number of reviews, this plot is separated out by neighbourhood groups. There are five graphs representing each neighbourhood group on one big plot. 
+
+**7** _Choose another explanatory variable (This can be either categorical or numerical). You can either substitute your secondary explanatory variable (i.e., the variable you chose in Question B-1) with this one or add this variable as a fourth variable in your analysis. Explain why you chose this variable to be used with (or instead of) your secondary explanatory variable._
+
+Our explanatory variable will be the room type. The types of rooms are entire homes/apartments, private, or shared rooms. We believe that room type influences the price of the AirBnB. Because we also believe that neighbourhood location influences AirBnB prices, we have chosen to include room type along with neighbourhood group, instead of replacing the variable. 
+
+**8** _Generate another summary table and plot using all of the variables you chose. Describe how this plot looks different from the previous ones._
+```{r}
+ggplot(airbnb, aes(x = newreview, y = newprice,  color = room_type)) + geom_point(alpha = .4, size = 3) +  labs(x = "Number of Reviews.", title = "Number of Reviews, Price, Room Type, and Neighbourhood Group of AirBnBs", y = "Price", color = "Room Type") + facet_wrap(~neighbourhood_group)
+```
+
+This plot has 4 variables, the price, number of reviews, room type and neighbourhood group of the AirBnB. This plot has the number of room types, separated by color on each of the five mini graphs separated by neighbourhood group. Contrasted from the first one, this plot shows the number of AirBnB’s plotted by room type, price, and number of reviews. In number 6, it does not show room type, but the number of AirBnBs in each neighbourhood group plotted by price and number of reviews. 
+
+**9** _In conclusion, describe what you learned about the outcome using the various explanatory variables you chose. _
+
+We saw a small, negative correlation between the Price of AirBnB and the number of reviews. When we compared the price and neighbourhood group, there seemed to be a higher price in the neighbourhoods of Manhattan and Brooklyn, and the lowest prices seemed to be in the Bronx. This makes sense, because Manhattan and Brooklyn tend to be the most expensive boroughs to live in. However, it is important to note that there was more data available in these areas, so the higher prices in these areas could be misleading because of the increase in observations of the AirBnBs. For room type, the rooms that are entire apartments/houses seemed to be the prices, the private rooms seemed to be the second priciest, and the shared rooms seemed to have the lowest prices on average. In conclusion, the price of an AirBnB in New York City seems to be very influenced by room type and neighbourhood group, but not as much for the number of reviews. 
+
